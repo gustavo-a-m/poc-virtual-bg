@@ -33,10 +33,12 @@ const inferenceCanvasCtx = inferenceCanvasEle.getContext('2d', {
   willReadFrequently: true,
 });
 // Canvas da máscara
-const maskCanvasEle =
-  typeof OffscreenCanvas !== 'undefined'
-    ? new OffscreenCanvas(1, 1)
-    : document.createElement('canvas');
+// const maskCanvasEle =
+//   typeof OffscreenCanvas !== 'undefined'
+//     ? new OffscreenCanvas(1, 1)
+//     : document.createElement('canvas');
+// const maskCanvasCtx = maskCanvasEle.getContext('2d');
+const maskCanvasEle = document.createElement('canvas');
 const maskCanvasCtx = maskCanvasEle.getContext('2d');
 // Cache para a máscara atual
 let currentMask;
@@ -201,7 +203,7 @@ async function segmentImage(inputFrameBuffer, outputFrameBuffer) {
   const mask = generateMask(inputFrame);
 
   // Salva a máscara atual no cache para evitar processamento duplicado
-  currentMask = mask;
+  currentMask = currentMask === mask ? null : mask;
 
   // Desenha a máscara no canvas
   if (currentMask) {
@@ -212,7 +214,7 @@ async function segmentImage(inputFrameBuffer, outputFrameBuffer) {
   const ctx = outputCanvasCtx;
   const { height: outputHeight, width: outputWidth } = outputCanvasEle;
   ctx.save();
-  ctx.filter = `blur(4px)`;
+  ctx.filter = `blur(2px)`;
   ctx.globalCompositeOperation = 'copy';
   ctx.drawImage(maskCanvasEle, 0, 0, outputWidth, outputHeight);
   ctx.filter = 'none';
